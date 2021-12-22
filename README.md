@@ -4,6 +4,10 @@ An interactive script to watch (only free) crunchyroll content from the cli.
 The script generates a folder with files in `$HOME/.local/share/`. These files
 contain lists of shows and episodes that the user generates interactively.
 
+## Preview
+
+![preview](./output.gif)
+
 ## Features
 
 - Watch full show or resume
