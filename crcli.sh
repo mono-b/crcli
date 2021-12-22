@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# deps: mpv awk sed grep lynx
+# deps: mpv awk sed lynx
 
 # Colors
 invi=$(tput civis)
@@ -78,14 +78,14 @@ input_control () {
 
 [[ "$1" == $contar ]] && follow2=menu_search
 
-	if [[ $1 -gt $2 && $2 -ge 1 ]] ; then
+	if [[ $1 -ge $2 && $2 -ge 1 ]] ; then
 		$follow
 	elif [[ $2 = b ]] ; then
 		clear
 		menu_ppal
 	else
 		echo "Please enter a valid input."
-	$follow2
+		$follow2
 	fi
 }
 
@@ -167,7 +167,7 @@ nombre=$(cat "$shows" \
 	| sed "s/\[.\] //g")
 
 # Controlling that user input is not higher or lesser than
-# than max/min of matched items
+# than max/min  of matched items
 input_control $contar $REPLY
 }
 
@@ -273,28 +273,29 @@ cat<<EOF
   [2] watch one ep
   [3] start from ep
   [4] play range of eps
-  Press [num]
+
+  Press [num] or go [b]ack
 EOF
 	read -n1 selectPlayer
 	case $selectPlayer in
 	# Watch full or resume
 	1)
 	clear
-	$player --playlist="$dir"/"$serie"/fullepisodes.txt \
+	kill $(pidof mpv) ; $player --playlist="$dir"/"$serie"/fullepisodes.txt \
 	        > /dev/null 2>&1;;
 	# Single episode
 	2)
 	clear
 	printf "Select ep to watch: ${visi}"
        	read epi
-	$player "$(head -"$epi" "$dir"/"$serie"/fullepisodes.txt | tail +"$epi")" \
+	kill $(pidof mpv) ; $player "$(head -"$epi" "$dir"/"$serie"/fullepisodes.txt | tail +"$epi")" \
 		> /dev/null 2>&1;;
 	# Start from episode
 	3)
 	clear
 	printf "Select ep to start from: ${visi}"
 	read epi
-	$player --playlist-start="$(( epi - 1 ))" \
+	kill $(pidof mpv) ; $player --playlist-start="$(( epi - 1 ))" \
 		--playlist="$dir"/"$serie"/fullepisodes.txt \
 		> /dev/null 2>&1;;
 	# Range of episodes
@@ -307,8 +308,10 @@ EOF
 	head -"$epie" "$dir"/"$serie"/fullepisodes.txt \
 	| tail +"$epis"
 	> "$dir"/"$serie"/templist.txt \
-	$player --playlist="$dir"/"$serie"/templist.txt \
+	kill $(pidof mpv) ; $player --playlist="$dir"/"$serie"/templist.txt \
 		> /dev/null 2>&1;;
+	b)
+	watch_directory;;
 	*)
 	menu_watch;;
 	esac
@@ -395,7 +398,7 @@ printf "Selected: "$nombre".\n\n Accept [a], re-roll [r] or back [b]."
 check_deps "mpv" "lynx" "sed" "awk"
 
 [ ! -d "$dir" ] && mkdir "$dir"
-[ ! -f "$shows" ] && extract_from_url "$cruncy"/videos/anime/alpha?group=all > "$shows"
+[ ! -f "$shows" ] && extract_from_url "$crunchy"/videos/anime/alpha?group=all > "$shows"
 showst=$(sed -n '/^[0-9]/,/^z./p' "$shows" | grep -v -e '/\|:\|&\|%')
 
 menu_ppal
